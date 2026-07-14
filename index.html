@@ -365,44 +365,85 @@
     }
 
     function createCard(job) {
-      const title =
-        String(job.targetName || "").trim();
+  const title =
+    String(job.targetName || "").trim();
 
-      const lastDate =
-        String(job.lastDate || "").trim();
+  const lastDate =
+    String(job.lastDate || "").trim();
 
-      const notificationPdf =
-        getSafeURL(job.notificationPdf);
+  const titleLink =
+    getSafeURL(job.titleLink);
 
-      const applicationLink =
-        getSafeURL(job.applicationLink);
+  const vacancies =
+    formatVacancies(job.vacancies);
 
-      const vacancies =
-        formatVacancies(job.vacancies);
+  const dateParts =
+    getDateParts(lastDate);
 
-      const dateParts =
-        getDateParts(lastDate);
+  if (!title || !dateParts) {
+    return "";
+  }
 
-      if (!title || !dateParts) {
-        return "";
-      }
+  const titleHTML = titleLink
+    ? (
+      '<a class="job-title"' +
+      ' href="' +
+      escapeHTML(titleLink) +
+      '"' +
+      ' target="_blank"' +
+      ' rel="noopener noreferrer">' +
+      escapeHTML(title) +
+      "</a>"
+    )
+    : (
+      '<div class="job-title">' +
+      escapeHTML(title) +
+      "</div>"
+    );
 
-      const titleHTML = notificationPdf
-        ? (
-          '<a class="job-title"' +
-          ' href="' +
-          escapeHTML(notificationPdf) +
-          '"' +
-          ' target="_blank"' +
-          ' rel="noopener noreferrer">' +
-          escapeHTML(title) +
-          "</a>"
-        )
-        : (
-          '<div class="job-title">' +
-          escapeHTML(title) +
-          "</div>"
-        );
+  const vacancyHTML = vacancies
+    ? (
+      '<div class="job-vacancy">' +
+      "👥 " +
+      escapeHTML(vacancies) +
+      "</div>"
+    )
+    : "";
+
+  const statusText =
+    getStatus(lastDate);
+
+  const statusHTML =
+    '<div class="job-status">' +
+    escapeHTML(statusText) +
+    "</div>";
+
+  return (
+    '<div class="job-card">' +
+
+      '<div class="date-box">' +
+
+        '<div class="date-day">' +
+        escapeHTML(dateParts.day) +
+        "</div>" +
+
+        '<div class="date-month">' +
+        escapeHTML(dateParts.month) +
+        "</div>" +
+
+      "</div>" +
+
+      '<div class="job-content">' +
+
+        titleHTML +
+        vacancyHTML +
+        statusHTML +
+
+      "</div>" +
+
+    "</div>"
+  );
+}
 
       const vacancyHTML = vacancies
         ? (
@@ -415,8 +456,6 @@
 
       const statusText =
         getStatus(lastDate);
-
-      const statusHTML = applicationLink
         ? (
           '<a class="apply-link"' +
           ' href="' +
