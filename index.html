@@ -94,10 +94,18 @@
       background: #ffffff;
       border: 1px solid #efdadd;
       border-radius: 11px;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
     }
 
     .job-card:last-child {
       margin-bottom: 0;
+    }
+
+    .job-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(150, 20, 45, 0.1);
     }
 
     .date-box {
@@ -158,22 +166,17 @@
       color: #a80725;
       border-radius: 20px;
       font-size: 12px;
+      line-height: 1.2;
       font-weight: 700;
     }
 
-    .job-status,
-    .apply-link {
+    .job-status {
       display: block;
       margin-top: 7px;
       color: #d90429;
       font-size: 13px;
       line-height: 1.25;
       font-weight: 700;
-      text-decoration: none;
-    }
-
-    .apply-link:hover {
-      text-decoration: underline;
     }
 
     .loading,
@@ -248,6 +251,9 @@
   </div>
 
   <script>
+    /*
+     * Paste your working Apps Script /exec URL here.
+     */
     const API_URL =
       "https://script.google.com/macros/s/AKfycbwilLKNHwleIA2aSQerFNujG352qpGDh_XFRLWM19OKXNNEBVdQEHspSRn21XMmVPEs4Q/exec";
 
@@ -267,7 +273,9 @@
 
     function getSafeURL(value) {
       try {
-        const url = new URL(String(value || "").trim());
+        const url = new URL(
+          String(value || "").trim()
+        );
 
         if (
           url.protocol === "https:" ||
@@ -283,15 +291,22 @@
     }
 
     function parseDate(value) {
-      const text = String(value || "").trim();
+      const text =
+        String(value || "").trim();
 
       if (!text) {
         return null;
       }
 
-      const date = new Date(text + "T12:00:00");
+      const date = new Date(
+        text.includes("T")
+          ? text
+          : text + "T12:00:00"
+      );
 
-      return isNaN(date.getTime()) ? null : date;
+      return isNaN(date.getTime())
+        ? null
+        : date;
     }
 
     function getDateParts(value) {
@@ -302,7 +317,9 @@
       }
 
       return {
-        day: String(date.getDate()).padStart(2, "0"),
+        day: String(
+          date.getDate()
+        ).padStart(2, "0"),
 
         month: date
           .toLocaleDateString("en-IN", {
@@ -313,7 +330,8 @@
     }
 
     function getDaysLeft(value) {
-      const closingDate = parseDate(value);
+      const closingDate =
+        parseDate(value);
 
       if (!closingDate) {
         return null;
@@ -325,19 +343,35 @@
       closingDate.setHours(0, 0, 0, 0);
 
       return Math.round(
-        (closingDate.getTime() - today.getTime()) /
-        (1000 * 60 * 60 * 24)
+        (
+          closingDate.getTime() -
+          today.getTime()
+        ) /
+        (
+          1000 *
+          60 *
+          60 *
+          24
+        )
       );
     }
 
     function getStatus(value) {
-      const daysLeft = getDaysLeft(value);
+      const daysLeft =
+        getDaysLeft(value);
+
+      if (daysLeft === null) {
+        return "Apply Now";
+      }
 
       if (daysLeft === 0) {
         return "Closing Today";
       }
 
-      if (daysLeft >= 1 && daysLeft <= 3) {
+      if (
+        daysLeft >= 1 &&
+        daysLeft <= 3
+      ) {
         return "Closing Soon";
       }
 
@@ -345,7 +379,8 @@
     }
 
     function formatVacancies(value) {
-      const text = String(value || "").trim();
+      const text =
+        String(value || "").trim();
 
       if (!text) {
         return "";
@@ -365,85 +400,41 @@
     }
 
     function createCard(job) {
-  const title =
-    String(job.targetName || "").trim();
+      const title =
+        String(job.targetName || "").trim();
 
-  const lastDate =
-    String(job.lastDate || "").trim();
+      const lastDate =
+        String(job.lastDate || "").trim();
 
-  const titleLink =
-    getSafeURL(job.titleLink);
+      const titleLink =
+        getSafeURL(job.titleLink);
 
-  const vacancies =
-    formatVacancies(job.vacancies);
+      const vacancies =
+        formatVacancies(job.vacancies);
 
-  const dateParts =
-    getDateParts(lastDate);
+      const dateParts =
+        getDateParts(lastDate);
 
-  if (!title || !dateParts) {
-    return "";
-  }
+      if (!title || !dateParts) {
+        return "";
+      }
 
-  const titleHTML = titleLink
-    ? (
-      '<a class="job-title"' +
-      ' href="' +
-      escapeHTML(titleLink) +
-      '"' +
-      ' target="_blank"' +
-      ' rel="noopener noreferrer">' +
-      escapeHTML(title) +
-      "</a>"
-    )
-    : (
-      '<div class="job-title">' +
-      escapeHTML(title) +
-      "</div>"
-    );
-
-  const vacancyHTML = vacancies
-    ? (
-      '<div class="job-vacancy">' +
-      "👥 " +
-      escapeHTML(vacancies) +
-      "</div>"
-    )
-    : "";
-
-  const statusText =
-    getStatus(lastDate);
-
-  const statusHTML =
-    '<div class="job-status">' +
-    escapeHTML(statusText) +
-    "</div>";
-
-  return (
-    '<div class="job-card">' +
-
-      '<div class="date-box">' +
-
-        '<div class="date-day">' +
-        escapeHTML(dateParts.day) +
-        "</div>" +
-
-        '<div class="date-month">' +
-        escapeHTML(dateParts.month) +
-        "</div>" +
-
-      "</div>" +
-
-      '<div class="job-content">' +
-
-        titleHTML +
-        vacancyHTML +
-        statusHTML +
-
-      "</div>" +
-
-    "</div>"
-  );
-}
+      const titleHTML = titleLink
+        ? (
+          '<a class="job-title"' +
+          ' href="' +
+          escapeHTML(titleLink) +
+          '"' +
+          ' target="_blank"' +
+          ' rel="noopener noreferrer">' +
+          escapeHTML(title) +
+          "</a>"
+        )
+        : (
+          '<div class="job-title">' +
+          escapeHTML(title) +
+          "</div>"
+        );
 
       const vacancyHTML = vacancies
         ? (
@@ -454,23 +445,12 @@
         )
         : "";
 
-      const statusText =
-        getStatus(lastDate);
-        ? (
-          '<a class="apply-link"' +
-          ' href="' +
-          escapeHTML(applicationLink) +
-          '"' +
-          ' target="_blank"' +
-          ' rel="noopener noreferrer">' +
-          escapeHTML(statusText) +
-          "</a>"
-        )
-        : (
-          '<div class="job-status">' +
-          escapeHTML(statusText) +
-          "</div>"
-        );
+      const statusHTML =
+        '<div class="job-status">' +
+        escapeHTML(
+          getStatus(lastDate)
+        ) +
+        "</div>";
 
       return (
         '<div class="job-card">' +
@@ -508,7 +488,12 @@
           "&cache=" +
           Date.now();
 
-        const response = await fetch(requestURL);
+        const response =
+          await fetch(requestURL, {
+            method: "GET",
+            cache: "no-store",
+            redirect: "follow"
+          });
 
         if (!response.ok) {
           throw new Error(
@@ -516,7 +501,8 @@
           );
         }
 
-        const result = await response.json();
+        const result =
+          await response.json();
 
         if (result.status !== "success") {
           throw new Error(
@@ -540,6 +526,7 @@
         }
 
         const cards = jobs
+          .slice(0, LIMIT)
           .map(createCard)
           .filter(Boolean)
           .join("");
@@ -551,7 +538,10 @@
           "</div>";
 
       } catch (error) {
-        console.error(error);
+        console.error(
+          "Widget error:",
+          error
+        );
 
         listElement.innerHTML =
           '<div class="error-message">' +
