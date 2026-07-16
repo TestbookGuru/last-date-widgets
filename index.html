@@ -197,6 +197,54 @@
       color: #d90429;
     }
 
+    .view-more-wrap {
+      padding: 0 14px 14px;
+      background: #fff8f9;
+    }
+
+    .view-more-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #a80725, #e11d48);
+      color: #ffffff !important;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none !important;
+      cursor: pointer;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .view-more-button:hover {
+      color: #ffffff !important;
+      text-decoration: none !important;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(168, 7, 37, 0.24);
+      opacity: 0.94;
+    }
+
+    .view-more-button:focus {
+      color: #ffffff !important;
+      outline: 2px solid #a80725;
+      outline-offset: 2px;
+    }
+
+    .view-more-arrow {
+      margin-left: 8px;
+      font-size: 18px;
+      line-height: 1;
+    }
+
     @media only screen and (max-width: 480px) {
       body {
         padding: 0;
@@ -223,6 +271,15 @@
       .job-title {
         font-size: 15px;
       }
+
+      .view-more-wrap {
+        padding: 0 12px 12px;
+      }
+
+      .view-more-button {
+        min-height: 44px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -248,11 +305,24 @@
       <div class="loading">Loading...</div>
     </div>
 
+    <div class="view-more-wrap">
+      <a
+        class="view-more-button"
+        href="https://testbook.com/news/sarkari-job-alerts/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View more Sarkari job alerts"
+      >
+        View More
+        <span class="view-more-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
   </div>
 
   <script>
     /*
-     * Paste your working Apps Script /exec URL here.
+     * Google Apps Script Web App URL
      */
     const API_URL =
       "https://script.google.com/macros/s/AKfycbwilLKNHwleIA2aSQerFNujG352qpGDh_XFRLWM19OKXNNEBVdQEHspSRn21XMmVPEs4Q/exec";
